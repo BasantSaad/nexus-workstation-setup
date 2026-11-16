@@ -1,0 +1,61 @@
+$ HOME=/home/user bash setup_workstation.sh   (run from a fresh working directory; data_engineers group pre-created)
+[INFO] Initiating Nexus Developer Workstation Setup...
+[INFO] Step 1: Building directory structure...
+[INFO] Step 2: Generating placeholder configurations...
+[INFO] Step 3: Installing essential packages via apt...
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+25 packages can be upgraded. Run 'apt list --upgradable' to see them.
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+curl is already the newest version (8.5.0-2ubuntu10.16).
+The following additional packages will be installed:
+  libnl-3-200 libnl-genl-3-200
+Suggested packages:
+  lm-sensors lsof strace hunspell
+The following NEW packages will be installed:
+  htop libnl-3-200 libnl-genl-3-200 nano tree
+0 upgraded, 5 newly installed, 0 to remove and 25 not upgraded.
+Need to get 568 kB of archives.
+After this operation, 1631 kB of additional disk space will be used.
+debconf: delaying package configuration, since apt-utils is not installed
+Setting up tree (2.1.1-2ubuntu3.24.04.2) ...
+Setting up nano (7.2-2ubuntu0.2) ...
+update-alternatives: using /bin/nano to provide /usr/bin/editor (editor) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/editor.1.gz because associated file /usr/share/man/man1/nano.1.gz (of link group editor) doesn't exist
+update-alternatives: using /bin/nano to provide /usr/bin/pico (pico) in auto mode
+update-alternatives: warning: skip creation of /usr/share/man/man1/pico.1.gz because associated file /usr/share/man/man1/nano.1.gz (of link group pico) doesn't exist
+Setting up libnl-3-200:amd64 (3.7.0-0.3build1.1) ...
+Setting up libnl-genl-3-200:amd64 (3.7.0-0.3build1.1) ...
+Setting up htop (3.3.0-4build1) ...
+Processing triggers for hicolor-icon-theme (0.17-2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+[INFO] Step 4: Securing configs and setting group ownership...
+[INFO] Step 5: Setting NEXUS_ENV in .bashrc...
+[INFO] Step 6: Capturing baseline process snapshot...
+[SUCCESS] Workstation provisioning script completed without errors.
+
+$ ls -l configs; ls -ld projects logs configs
+total 0
+-rw------- 1 root root 0 Nov 16 14:28 app.properties
+-rw------- 1 root root 0 Nov 16 14:28 database.conf
+drwxr-xr-x 2 root root           4096 Nov 16 14:28 configs
+drwxr-xr-x 2 root root           4096 Nov 16 14:28 logs
+drwxrwx--- 2 root data_engineers 4096 Nov 16 14:28 projects
+
+$ cat ~/.bashrc
+# existing profile
+export NEXUS_ENV=production
+
+$ head -3 logs/processes.log
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.8  0.1  31004  7684 ?        SLl  14:28   0:00 /process_api --firecracker-init --addr 0.0.0.0:2024 --max-ws-buffer-size 32768 --block-local-connections --log-vsock-port 5002 --control-vsock-port 5001 --listen-vsock-port 2024 --tcp-readiness-only
+root         2  0.0  0.0      0     0 ?        S    14:28   0:00 [kthreadd]
+
+$ dpkg -l curl htop nano tree | tail -4
+ii  curl           8.5.0-2ubuntu10.16     amd64        command line tool for transferring data with URL syntax
+ii  htop           3.3.0-4build1          amd64        interactive processes viewer
+ii  nano           7.2-2ubuntu0.2         amd64        small, friendly text editor inspired by Pico
+ii  tree           2.1.1-2ubuntu3.24.04.2 amd64        displays an indented directory tree, in color
